@@ -7,8 +7,13 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     MODE: str = "development"
 
+    AWS_SERVER_PUBLIC_KEY: str
+    AWS_SERVER_SECRET_KEY: str
+    AWS_SERVER_ENDPOINT: str
+
     class Config:
         env_file = ".env"
+        env_file_encoding = "utf-8"
 
 
 class DateTimeSettings(BaseSettings):

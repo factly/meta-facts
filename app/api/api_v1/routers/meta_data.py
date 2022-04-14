@@ -1,9 +1,11 @@
 from typing import Dict, List
 
-from fastapi import FastAPI, File, UploadFile
+from botocore.client import BaseClient
+from fastapi import Depends, FastAPI, File, UploadFile
 
 from app.core.config import Settings
 from app.models.meta_data import MetaData
+from app.utils.dependency import s3_auth
 from app.utils.meta_data import (
     create_meta_data_for_dataset_csv,
     create_meta_data_for_dataset_urls,
@@ -33,3 +35,9 @@ async def get_meta_data_from_files(
     """Functions Facilitates to generate meta-data for datasets when file objects link is provided."""
     meta_data = await create_meta_data_for_dataset_csv(csv_files)
     return meta_data
+
+
+@router.get("/list-buckets")
+async def get_bucket_list(s3: BaseClient = Depends(s3_auth)):
+    response = s3.list_buckets()
+    return response["Buckets"]
