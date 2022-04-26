@@ -1,7 +1,10 @@
-from typing import Dict, List
+import asyncio
+from typing import ChainMap, Dict, List
 
 from botocore.client import BaseClient
-from fastapi import Depends, FastAPI, File, UploadFile
+from fastapi import Depends, FastAPI, File, Form, HTTPException, UploadFile
+from minio.error import S3Error
+from starlette import status
 
 from app.core.config import Settings
 from app.models.meta_data import MetaData
@@ -9,6 +12,7 @@ from app.utils.dependency import s3_auth
 from app.utils.meta_data import (
     create_meta_data_for_dataset_csv,
     create_meta_data_for_dataset_urls,
+    create_meta_data_for_s3_objects,
 )
 
 settings = Settings()
@@ -37,7 +41,29 @@ async def get_meta_data_from_files(
     return meta_data
 
 
-@router.get("/list-buckets")
-async def get_bucket_list(s3: BaseClient = Depends(s3_auth)):
-    response = s3.list_buckets()
-    return response["Buckets"]
+@router.post("/s3", response_model=Dict[str, MetaData])
+async def create_meta_data_for_dataset_from_s3(
+    bucket_name: str = Form(
+        "election-commision-india", description="Name of the bucket"
+    ),
+    prefix: str = Form("processed", description="Name of the prefix"),
+    s3: BaseClient = Depends(s3_auth),
+):
+    """Functions Facilitates to generate meta-data for datasets when file objects link is provided."""
+    try:
+        objects = s3.list_objects(
+            bucket_name=bucket_name, prefix=prefix, recursive=True
+        )
+    except S3Error as s3e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"{s3e}"
+        )
+    else:
+        result = await asyncio.gather(
+            *[
+                create_meta_data_for_s3_objects(s3, bucket_name, object)
+                for object in objects
+            ]
+        )
+        meta_data = dict(ChainMap(*result))
+        return meta_data

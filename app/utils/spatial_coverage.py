@@ -14,7 +14,9 @@ class GeoCoverage:
 
     def nunique(self):
         return sum(
-            self.dataset[self.get_geographic_columns].nunique(dropna=True)
+            self.dataset[list(self.get_geographic_columns)].nunique(
+                dropna=True
+            )
         )
 
     def single_unique_value(self):

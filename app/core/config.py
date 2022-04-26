@@ -7,9 +7,10 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     MODE: str = "development"
 
-    AWS_SERVER_PUBLIC_KEY: str
-    AWS_SERVER_SECRET_KEY: str
-    AWS_SERVER_ENDPOINT: str
+    S3_SERVER_PUBLIC_KEY = "minio"
+    S3_SERVER_SECRET_KEY = "password"
+    S3_SERVER_ENDPOINT = "minio:9000"
+    S3_SECURE_CONNECTION = False
 
     class Config:
         env_file = ".env"

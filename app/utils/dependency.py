@@ -1,5 +1,5 @@
-import boto3
 from botocore.client import BaseClient
+from minio import Minio
 
 from app.core.config import Settings
 
@@ -7,10 +7,10 @@ settings = Settings()
 
 
 def s3_auth() -> BaseClient:
-    s3 = boto3.client(
-        service_name="s3",
-        aws_access_key_id=settings.AWS_SERVER_PUBLIC_KEY,
-        aws_secret_access_key=settings.AWS_SERVER_SECRET_KEY,
-        endpoint_url=settings.AWS_SERVER_ENDPOINT,
+    s3 = Minio(
+        endpoint=settings.S3_SERVER_ENDPOINT,
+        access_key=settings.S3_SERVER_PUBLIC_KEY,
+        secret_key=settings.S3_SERVER_SECRET_KEY,
+        secure=settings.S3_SECURE_CONNECTION,
     )
     return s3
