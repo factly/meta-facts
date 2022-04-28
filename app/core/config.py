@@ -6,6 +6,16 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Meta Facts"
     API_V1_STR: str = "/api/v1"
     MODE: str = "development"
+    DOCS_URL: str = "/api/docs"
+    # CORS PARAMS
+    CORS_ORIGINS: list = [
+        "http://127.0.0.1:8000",
+        "http://127.0.0.1:8005",
+        "http://localhost:8000",
+        "http://localhost:8005",
+    ]
+    CORS_METHODS: list = ["GET", "POST"]
+    CORS_ALLWED_CREDENTIALS: bool = True
 
     class Config:
         env_file = ".env"
