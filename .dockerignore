@@ -1,3 +1,6 @@
+# Volumes
+volumes/
+
 # taken from : https://github.com/themattrix/python-pypi-template/blob/master/.dockerignore
 # Git
 .git
@@ -79,6 +82,7 @@ target/
 .env/
 .venv/
 venv/
+.venv
 
 # PyCharm
 .idea
