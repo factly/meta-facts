@@ -11,8 +11,10 @@ class Settings(BaseSettings):
     CORS_ORIGINS: list = [
         "http://127.0.0.1:8000",
         "http://127.0.0.1:8005",
+        "http://127.0.0.1:4455",
         "http://localhost:8000",
         "http://localhost:8005",
+        "http://localhost:4455/",
     ]
     CORS_METHODS: list = ["GET", "POST"]
     CORS_ALLWED_CREDENTIALS: bool = True
