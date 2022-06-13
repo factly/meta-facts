@@ -17,7 +17,13 @@ class Settings(BaseSettings):
         "http://localhost:4455/",
     ]
     CORS_METHODS: list = ["GET", "POST"]
-    CORS_ALLWED_CREDENTIALS: bool = True
+    CORS_ALLOWED_CREDENTIALS: bool = True
+
+    # Dataset source configurations
+    S3_SOURCE_ACCESS_KEY: str = ...
+    S3_SOURCE_SECRET_KEY: str = ...
+    S3_SOURCE_ENDPOINT_URL: str = ...
+    S3_SOURCE_RESOURCE: str = "S3"
 
     class Config:
         env_file = ".env"
