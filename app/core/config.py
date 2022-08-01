@@ -1,3 +1,5 @@
+from typing import List
+
 from pydantic import BaseSettings
 
 
@@ -18,6 +20,7 @@ class Settings(BaseSettings):
     ]
     CORS_METHODS: list = ["GET", "POST"]
     CORS_ALLOWED_CREDENTIALS: bool = True
+    CORS_HEADERS: List[str] = ["*"]
 
     # Dataset source configurations
     S3_SOURCE_ACCESS_KEY: str = ...

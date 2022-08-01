@@ -5,7 +5,7 @@ from app.core.config import Settings
 settings = Settings()
 
 
-def get_s3_resource(
+async def get_s3_resource(
     s3_access_key: str, s3_secret_key: str, s3_endpoint_url: str, resource: str
 ):
     s3_access_key = (
@@ -37,11 +37,14 @@ def get_s3_resource(
         return s3_resource
 
 
-def get_list_of_s3_objects(s3_resource, s3_bucket, prefix):
+async def get_list_of_s3_objects(s3_resource, s3_bucket, prefix):
     try:
-        s3_objects = s3_resource.Bucket(s3_bucket).objects.filter(
-            Prefix=prefix
-        )
+        if prefix:
+            s3_objects = s3_resource.Bucket(s3_bucket).objects.filter(
+                Prefix=prefix
+            )
+        else:
+            s3_objects = s3_resource.Bucket(s3_bucket).objects.all()
     except Exception as e:
         raise ValueError(f"Error getting list of S3 objects: {e}")
     else:

@@ -62,6 +62,8 @@ def get_list_mappings(unique_years):
 
 def is_sequence(year_mapping):
     combine_all_years = sorted(list(set(chain(*year_mapping.values()))))
+    if not combine_all_years:
+        return False
     min_val = min(combine_all_years)
     max_val = max(combine_all_years)
     # check if its a discrete or continuous combine_all_years
