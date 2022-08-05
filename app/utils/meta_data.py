@@ -117,7 +117,9 @@ async def get_dataset_meta_data_for_s3_file(s3_resource, s3_bucket, s3_key):
         return {s3_key: meta_data}
 
 
-async def create_meta_data_for_s3_bucket(s3_resource, s3_bucket, prefix, file_format):
+async def create_meta_data_for_s3_bucket(
+    s3_resource, s3_bucket, prefix, file_format
+):
     objects = await get_list_of_s3_objects(s3_resource, s3_bucket, prefix)
     tasks = [
         asyncio.ensure_future(
@@ -127,7 +129,8 @@ async def create_meta_data_for_s3_bucket(s3_resource, s3_bucket, prefix, file_fo
                 s3_key=s3_file_obj.key,
             )
         )
-        for s3_file_obj in objects if s3_file_obj.key.endswith(file_format)
+        for s3_file_obj in objects
+        if s3_file_obj.key.endswith(file_format)
     ]
 
     results = await asyncio.gather(*tasks)
