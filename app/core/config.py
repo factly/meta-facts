@@ -9,16 +9,10 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     MODE: str = "development"
     DOCS_URL: str = "/api/docs"
+
     # CORS PARAMS
-    CORS_ORIGINS: list = [
-        "http://127.0.0.1:8000",
-        "http://127.0.0.1:8005",
-        "http://127.0.0.1:4455",
-        "http://localhost:8000",
-        "http://localhost:8005",
-        "http://localhost:4455/",
-    ]
-    CORS_METHODS: list = ["GET", "POST"]
+    CORS_ORIGINS: list = ["*"]
+    CORS_METHODS: list = ["*"]
     CORS_ALLOWED_CREDENTIALS: bool = True
     CORS_HEADERS: List[str] = ["*"]
 

@@ -51,6 +51,7 @@ async def get_meta_data_from_s3(
         None, description="S3 endpoint url"
     ),
     resource: Union[str, None] = Form(None, description="S3 resource"),
+    file_format: str = Form("csv", description = "Format of the processed file")
 ):
     """Functions Facilitates to generate meta-data for datasets when file objects link is provided."""
     try:
@@ -68,7 +69,7 @@ async def get_meta_data_from_s3(
     else:
         logger.info(f"Connected to S3 bucket: {s3_bucket}")
         meta_data = await create_meta_data_for_s3_bucket(
-            s3_resource=s3_resource, s3_bucket=s3_bucket, prefix=prefix
+            s3_resource=s3_resource, s3_bucket=s3_bucket, prefix=prefix, file_format=file_format
         )
         return meta_data
 
@@ -86,6 +87,7 @@ async def list_bucket_objects(
         None, description="S3 endpoint url"
     ),
     resource: Union[str, None] = Form(None, description="S3 resource"),
+    file_format: str = Form("csv", description = "Format of the processed file")
 ):
     try:
         s3_resource = await get_s3_resource(
@@ -103,7 +105,7 @@ async def list_bucket_objects(
         objects = await get_list_of_s3_objects(s3_resource, s3_bucket, prefix)
         objects_json = [
             {"key": obj.key, "last_modified": obj.last_modified}
-            for obj in objects
+            for obj in objects if obj.key.endswith(file_format)
         ]
         return {
             "total": len(objects_json),
