@@ -1,4 +1,5 @@
 import re
+from io import BytesIO
 from pathlib import Path
 
 from pandas import DataFrame, read_csv
@@ -14,8 +15,20 @@ async def get_dataset(dataset_path):
     return dataset
 
 
+async def get_dataset_from_s3(s3_resource, s3_bucket, s3_key):
+    try:
+        file_object = BytesIO(
+            s3_resource.Object(s3_bucket, s3_key).get()["Body"].read()
+        )
+    except Exception as e:
+        raise ValueError(f"Could not get dataset from: {s3_key}. Due to {e}")
+    else:
+        dataset = read_csv(file_object, encoding="utf-8")
+        return dataset
+
+
 async def get_files_from_directory(directory: str):
-    # funcion currently asumes that local path is proivided
+    # function currently assumes that local path is provided
     # ? should this method will look if dataset in local path and remote path as well
     directory_path = Path(directory)
     if not directory_path.exists():
@@ -33,7 +46,7 @@ class ColumnAttributes:
         self.dataset = dataset
 
     def year_column(self):
-        # There are 3 different year column with 2 difffernet formats
+        # There are 3 different year column with 2 different formats
         # year, fiscal_year, academic_year
         year_columns_in_datasets = [
             col
