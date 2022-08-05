@@ -1,4 +1,5 @@
 import pandas as pd
+from fastapi.logger import logger
 
 from app.core.config import GeographySettings
 from app.utils.columns_mapping import find_geography_columns
@@ -14,7 +15,9 @@ class GeoCoverage:
 
     def nunique(self):
         return sum(
-            self.dataset[self.get_geographic_columns].nunique(dropna=True)
+            self.dataset[list(self.get_geographic_columns)].nunique(
+                dropna=True
+            )
         )
 
     def single_unique_value(self):
@@ -24,12 +27,18 @@ class GeoCoverage:
             )
 
         unique_values_with_nan = pd.unique(
-            self.dataset[self.get_geographic_columns].values.ravel()
+            self.dataset[list(self.get_geographic_columns)].values.ravel()
         )
-        wnique_values_without_nan = unique_values_with_nan[
+        unique_values_without_nan = unique_values_with_nan[
             pd.notna(unique_values_with_nan)
         ]
-        return wnique_values_without_nan[0]
+        try:
+            return unique_values_without_nan[0]
+        except IndexError as ie:
+            logger.exception(
+                f"No unique value found for {self.geo_entity_type}: {ie}"
+            )
+            return ""
 
 
 async def get_spatial_coverage(dataset):

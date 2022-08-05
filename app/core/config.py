@@ -1,3 +1,5 @@
+from typing import List
+
 from pydantic import BaseSettings
 
 
@@ -7,17 +9,18 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     MODE: str = "development"
     DOCS_URL: str = "/api/docs"
+
     # CORS PARAMS
-    CORS_ORIGINS: list = [
-        "http://127.0.0.1:8000",
-        "http://127.0.0.1:8005",
-        "http://127.0.0.1:4455",
-        "http://localhost:8000",
-        "http://localhost:8005",
-        "http://localhost:4455/",
-    ]
-    CORS_METHODS: list = ["GET", "POST"]
-    CORS_ALLWED_CREDENTIALS: bool = True
+    CORS_ORIGINS: list = ["*"]
+    CORS_METHODS: list = ["*"]
+    CORS_ALLOWED_CREDENTIALS: bool = True
+    CORS_HEADERS: List[str] = ["*"]
+
+    # Dataset source configurations
+    S3_SOURCE_ACCESS_KEY: str = ...
+    S3_SOURCE_SECRET_KEY: str = ...
+    S3_SOURCE_ENDPOINT_URL: str = ...
+    S3_SOURCE_RESOURCE: str = "S3"
 
     class Config:
         env_file = ".env"
