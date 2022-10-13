@@ -11,6 +11,7 @@ from app.utils.meta_data import (
     create_meta_data_for_s3_bucket,
 )
 from app.utils.s3_files import get_list_of_s3_objects, get_s3_resource
+from aiohttp import ClientSession
 
 settings = Settings()
 
@@ -23,7 +24,9 @@ meta_data_router = router = FastAPI(
 @router.post("/urls", response_model=Dict[str, MetaData])
 async def get_metadata_for_dataset_with_source_urls(urls: List[str]):
     """Functions Facilitates to generate meta-data for datasets when their download link are provided."""
-    meta_data = await create_meta_data_for_dataset_urls(urls)
+    session = ClientSession()
+    meta_data = await create_meta_data_for_dataset_urls(urls, session = session)
+    await session.close()
     return meta_data
 
 
