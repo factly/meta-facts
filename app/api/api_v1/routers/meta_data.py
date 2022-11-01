@@ -1,5 +1,6 @@
 from typing import Dict, List, Union
 
+from aiohttp import ClientSession
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile, status
 from fastapi.logger import logger
 
@@ -23,7 +24,9 @@ meta_data_router = router = FastAPI(
 @router.post("/urls", response_model=Dict[str, MetaData])
 async def get_metadata_for_dataset_with_source_urls(urls: List[str]):
     """Functions Facilitates to generate meta-data for datasets when their download link are provided."""
-    meta_data = await create_meta_data_for_dataset_urls(urls)
+    session = ClientSession()
+    meta_data = await create_meta_data_for_dataset_urls(urls, session=session)
+    await session.close()
     return meta_data
 
 

@@ -6,7 +6,11 @@ from starlette.datastructures import UploadFile
 
 from app.models.meta_data import MetaData
 from app.utils.columns_mapping import find_mapped_columns
-from app.utils.common import get_dataset, get_dataset_from_s3
+from app.utils.common import (
+    get_dataset_from_file,
+    get_dataset_from_s3,
+    get_dataset_from_url,
+)
 from app.utils.formats_available import get_formats_available
 from app.utils.granularity import get_granularity
 from app.utils.is_public import get_is_public
@@ -17,9 +21,11 @@ from app.utils.temporal_coverage import get_temporal_coverage
 from app.utils.units import get_units
 
 
-async def get_dataset_meta_data(dataset_full_path: str):
+async def get_dataset_meta_data(dataset_full_path: str, session=None):
     try:
-        dataset = await get_dataset(dataset_full_path)
+        dataset = await get_dataset_from_url(
+            session=session, url=dataset_full_path
+        )
     except Exception as e:
         logger.exception(
             f"Could not get datasets from: {dataset_full_path} : {e}"
@@ -44,8 +50,11 @@ async def get_dataset_meta_data(dataset_full_path: str):
     return {dataset_full_path: meta_data}
 
 
-async def create_meta_data_for_dataset_urls(urls: List[str]) -> dict:
-    tasks = [asyncio.ensure_future(get_dataset_meta_data(url)) for url in urls]
+async def create_meta_data_for_dataset_urls(urls: List[str], **kwargs) -> dict:
+    tasks = [
+        asyncio.ensure_future(get_dataset_meta_data(url, **kwargs))
+        for url in urls
+    ]
 
     results = await asyncio.gather(*tasks)
     return ChainMap(*results)
@@ -53,7 +62,7 @@ async def create_meta_data_for_dataset_urls(urls: List[str]) -> dict:
 
 async def get_dataset_meta_data_for_file_object(file_object, filename: str):
     try:
-        dataset = await get_dataset(file_object)
+        dataset = await get_dataset_from_file(file_object)
     except Exception as e:
         logger.exception(f"Could not get datasets from: {filename} : {e}")
         logger.warning(f"Generate Blank MetaData for: {filename}")

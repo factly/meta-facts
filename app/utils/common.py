@@ -2,6 +2,7 @@ import re
 from io import BytesIO
 from pathlib import Path
 
+from charset_normalizer import from_bytes
 from pandas import DataFrame, read_csv
 
 STANDARD_YEAR_COLUMN_NAME = {"year", "fiscal_year", "academic_year"}
@@ -9,21 +10,50 @@ YEAR_REGEX_PATTERN = re.compile(r"^\d{4}$")
 OTHER_YEAR_REGEX_PATTERN = re.compile(r"^\d{4}-\d{2}$")
 
 
-async def get_dataset(dataset_path):
-    # currently get dataset sample from url
-    dataset = read_csv(dataset_path)
+async def get_file(session, url):
+    async with session.get(url) as response:
+        return await response.read()
+
+
+def get_encoding(obj):
+    encoding = from_bytes(obj).best().encoding
+    return encoding
+
+
+async def get_dataset_from_url(session, url):
+    try:
+        dataset = read_csv(url)
+    except UnicodeDecodeError:
+        file = await get_file(session, url)
+        encoding = get_encoding(obj=file)
+        dataset = read_csv(BytesIO(file), encoding=encoding)
+    return dataset
+
+
+async def get_dataset_from_file(dataset_file):
+    # Reading datafrom TempSpoolfile as read_csv clears the temporary file data
+    file = dataset_file.read()
+    try:
+        dataset = read_csv(BytesIO(file))
+    except UnicodeDecodeError:
+        encoding = get_encoding(obj=file)
+        dataset = read_csv(BytesIO(file), encoding=encoding)
     return dataset
 
 
 async def get_dataset_from_s3(s3_resource, s3_bucket, s3_key):
     try:
-        file_object = BytesIO(
+        file_object = (
             s3_resource.Object(s3_bucket, s3_key).get()["Body"].read()
         )
     except Exception as e:
         raise ValueError(f"Could not get dataset from: {s3_key}. Due to {e}")
     else:
-        dataset = read_csv(file_object, encoding="utf-8")
+        try:
+            dataset = read_csv(BytesIO(file_object), encoding="utf-8")
+        except UnicodeDecodeError:
+            encoding = get_encoding(obj=file_object)
+            dataset = read_csv(BytesIO(file_object), encoding=encoding)
         return dataset
 
 
