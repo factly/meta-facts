@@ -1,7 +1,7 @@
 import re
 from itertools import chain
 from typing import List
-
+import more_itertools as mit
 from app.core.config import DateTimeSettings
 
 datetime_settings = DateTimeSettings()
@@ -48,11 +48,11 @@ def get_list_of_years_in_interval(year_period):
         domain.append(year)
         if str(year)[-2:] == ending_part:
             break
-        year += 1
+        year += 1 
     return domain
 
 
-def get_list_mappings(unique_years):
+def get_list_mappings(unique_years): # how is the input?
     year_mapping = {
         unique_year: get_list_of_years_in_interval(unique_year)
         for unique_year in unique_years
@@ -61,7 +61,7 @@ def get_list_mappings(unique_years):
 
 
 def is_sequence(year_mapping):
-    combine_all_years = sorted(list(set(chain(*year_mapping.values()))))
+    combine_all_years = sorted(list(set(chain(*year_mapping.values()))))  # getting all values for the different keys in the dictionary
     if not combine_all_years:
         return False
     min_val = min(combine_all_years)
@@ -111,4 +111,24 @@ async def get_temporal_coverage(dataset, mapped_columns: dict):
     temporal_coverage = temporal_coverage_representation(
         year_in_sequence, year_mapping
     )
+    if not year_in_sequence: # when years are not in sequence
+        years = temporal_coverage.split(", ") # getting list of years 
+        main_text = ''
+        if len(years[0])!=4: # when non calender year
+            years = [int(year.split("-")[0]) for year in years] # converting fiscal year to calender year 2017-18 to 2017
+            list_of_years = [list(group) for group in mit.consecutive_groups(years)] # getting lists of continuous years [[2013, 2014, 2015], [2017], [2019,2020]]
+            for lst in list_of_years:
+                if len(lst)==1: # no following year [[2013, 2014, 2015], [2017], [2019,2020]]
+                    main_text = main_text+f'{lst[0]}-{str(lst[0]+1)[2:]}, ' # fiscal year representation
+                else: # continuous years from list of years
+                    main_text = main_text+f'{lst[0]}-{str(lst[0]+1)[2:]} to {lst[-1]}-{str(lst[-1]+1)[2:]}, '
+        else:
+            years = list(map(int, years))
+            list_of_years = [list(group) for group in mit.consecutive_groups(years)]
+            for lst in list_of_years:
+                if len(lst)==1:
+                    main_text = main_text+f'{lst[0]}, '
+                else:
+                    main_text = main_text+f'{lst[0]} to {lst[-1]}, '
+        temporal_coverage = main_text.strip(', ')
     return {"temporal_coverage": temporal_coverage}
