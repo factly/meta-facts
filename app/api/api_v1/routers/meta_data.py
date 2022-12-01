@@ -1,5 +1,6 @@
 from typing import Dict, List, Union
 
+import botocore.exceptions as b3e
 from aiohttp import ClientSession
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile, status
 from fastapi.logger import logger
@@ -69,7 +70,8 @@ async def get_meta_data_from_s3(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Error connecting to S3: {e}",
         )
-    else:
+
+    try:
         logger.info(f"Connected to S3 bucket: {s3_bucket}")
         meta_data = await create_meta_data_for_s3_bucket(
             s3_resource=s3_resource,
@@ -77,6 +79,24 @@ async def get_meta_data_from_s3(
             prefix=prefix,
             file_format=file_format,
         )
+    except b3e.ClientError as err:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=err.response["Error"],
+        )
+    else:
+        if not meta_data:
+            # To Keep consistency across we hardcode the error response if
+            # prefix does not have any key
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail={
+                    "Code": "NoSuchPrefix",
+                    "Message": "The Specified path does not exist",
+                    "BucketName": s3_bucket,
+                    "Prefix": prefix,
+                },
+            )
         return meta_data
 
 
