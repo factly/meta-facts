@@ -4,6 +4,7 @@ from typing import ChainMap, List
 from fastapi.logger import logger
 from starlette.datastructures import UploadFile
 
+from app.models.enums import SourceType
 from app.models.meta_data import MetaData
 from app.utils.columns_mapping import find_mapped_columns
 from app.utils.common import (
@@ -14,7 +15,10 @@ from app.utils.common import (
 from app.utils.formats_available import get_formats_available
 from app.utils.granularity import get_granularity
 from app.utils.is_public import get_is_public
-from app.utils.output_file_name import get_output_file_name
+from app.utils.output_file_name import (
+    get_output_file_name,
+    get_output_file_path,
+)
 from app.utils.s3_files import get_list_of_s3_objects
 from app.utils.spatial_coverage import get_spatial_coverage
 from app.utils.temporal_coverage import get_temporal_coverage
@@ -38,7 +42,9 @@ async def get_dataset_meta_data(dataset_full_path: str, session=None):
         }
     mapped_columns = await find_mapped_columns(dataset.columns)
     result = await asyncio.gather(
-        get_output_file_name(dataset_full_path),
+        get_output_file_path(
+            dataset_full_path, source_type=SourceType.LOCAL.value
+        ),
         get_units(dataset, mapped_columns),
         get_temporal_coverage(dataset, mapped_columns),
         get_granularity(dataset.columns),
@@ -72,7 +78,9 @@ async def get_dataset_meta_data_for_file_object(file_object, filename: str):
     else:
         mapped_columns = await find_mapped_columns(dataset.columns)
         result = await asyncio.gather(
-            get_output_file_name(filename),
+            get_output_file_path(
+                name=filename, source_type=SourceType.LOCAL.value
+            ),
             get_units(dataset, mapped_columns),
             get_temporal_coverage(dataset, mapped_columns),
             get_granularity(dataset.columns),
@@ -113,7 +121,11 @@ async def get_dataset_meta_data_for_s3_file(s3_resource, s3_bucket, s3_key):
         logger.info(f"Data-frame created for {s3_key}")
         mapped_columns = await find_mapped_columns(dataset.columns)
         result = await asyncio.gather(
-            get_output_file_name(s3_key),
+            get_output_file_path(
+                name=s3_key,
+                source_type=SourceType.S3.value,
+                bucket_name=s3_bucket,
+            ),
             get_units(dataset, mapped_columns),
             get_temporal_coverage(dataset, mapped_columns),
             get_granularity(dataset.columns),
