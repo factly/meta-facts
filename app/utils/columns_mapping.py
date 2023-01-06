@@ -39,6 +39,9 @@ async def find_datetime_columns(columns: set):
         r".*({})".format(datetime_settings.MONTH_KEYWORD)
     )
     date_pattern = re.compile(r".*({})".format(datetime_settings.DATE_KEYWORD))
+    as_on_date_pattern = re.compile(
+        r".*({})".format(datetime_settings.AS_ON_DATE_PATTERN)
+    )
 
     fiscal_year_columns, columns = extract_pattern_from_columns(
         columns, non_cal_year_pattern
@@ -53,6 +56,11 @@ async def find_datetime_columns(columns: set):
         columns, month_pattern
     )
     date_columns, columns = extract_pattern_from_columns(columns, date_pattern)
+
+    # filter out `as_on_date` from date columns
+    date_columns = {
+        col for col in date_columns if not as_on_date_pattern.match(col)
+    }
 
     return {
         "non_calendar_year": fiscal_year_columns,
