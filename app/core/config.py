@@ -34,6 +34,7 @@ class DateTimeSettings(BaseSettings):
     QUARTER_KEYWORD = "quarter"
     MONTH_KEYWORD = "month"
     DATE_KEYWORD = "date"
+    AS_ON_DATE_PATTERN = r"as.*on.*date*"
     CALENDAR_YEAR_PATTERN = "%Y"
     NON_CALENDAR_YEAR_PATTERN = r"^\d{4}-\d{2}$"
     QUARTER_FORMAT = r"Q[1-4]"
