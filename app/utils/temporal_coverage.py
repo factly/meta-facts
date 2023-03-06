@@ -87,8 +87,10 @@ def temporal_coverage_representation(is_sequence, year_mapping):
 
 
 async def get_temporal_coverage(dataset, mapped_columns: dict):
-    year_columns = list(mapped_columns["calender_year"]) + list(
-        mapped_columns["non_calendar_year"]
+    year_columns = (
+        list(mapped_columns["calender_year"])
+        + list(mapped_columns["non_calendar_year"])
+        + list(mapped_columns["other_year"])
     )
     year_columns = [year_column for year_column in year_columns if year_column]
 

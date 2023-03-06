@@ -32,6 +32,9 @@ async def find_datetime_columns(columns: set):
     cal_year_pattern = re.compile(
         r".*({})".format(datetime_settings.CALENDAR_YEAR_KEYWORD)
     )
+    other_year_pattern = re.compile(
+        r".*({})".format(datetime_settings.OTHER_YEAR_KEYWORD)
+    )
     quarter_pattern = re.compile(
         r".*({})".format(datetime_settings.QUARTER_KEYWORD)
     )
@@ -49,6 +52,9 @@ async def find_datetime_columns(columns: set):
     year_columns, columns = extract_pattern_from_columns(
         columns, cal_year_pattern
     )
+    other_year_columns, columns = extract_pattern_from_columns(
+        columns, other_year_pattern
+    )
     quarter_columns, columns = extract_pattern_from_columns(
         columns, quarter_pattern
     )
@@ -61,10 +67,10 @@ async def find_datetime_columns(columns: set):
     date_columns = {
         col for col in date_columns if not as_on_date_pattern.match(col)
     }
-
     return {
         "non_calendar_year": fiscal_year_columns,
         "calender_year": year_columns,
+        "other_year": other_year_columns,
         "quarter": quarter_columns,
         "month": month_columns,
         "date": date_columns,
@@ -131,6 +137,7 @@ async def find_mapped_columns(columns):
         **unit_columns,
         **note_columns,
     }
+
     not_mapped_columns = list(
         set(columns).difference(
             list(chain.from_iterable(mapped_columns.values()))

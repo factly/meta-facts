@@ -28,9 +28,10 @@ class Settings(BaseSettings):
 
 class DateTimeSettings(BaseSettings):
 
-    CALENDAR_YEAR_KEYWORD = "year"
+    CALENDAR_YEAR_KEYWORD = "^year$"
     FISCAL_YEAR_KEYWORD = "fiscal_year"
     ACADEMIC_YEAR_KEYWORD = "academic_year"
+    OTHER_YEAR_KEYWORD = ".*_year"
     QUARTER_KEYWORD = "quarter"
     MONTH_KEYWORD = "month"
     DATE_KEYWORD = "date"
@@ -46,7 +47,7 @@ class DateTimeSettings(BaseSettings):
         2: ["week"],
         3: ["month"],
         4: ["quarter"],
-        5: ["calender_year", "non_calendar_year"],
+        5: ["calender_year", "non_calendar_year", "other_year"],
     }
     GRANULARITY_REPRESENTATION = {
         "date": "Daily",
@@ -55,6 +56,7 @@ class DateTimeSettings(BaseSettings):
         "quarter": "Quarterly",
         "calender_year": "Yearly",
         "non_calendar_year": "Yearly",
+        "other_year": "Yearly",
     }
 
 

@@ -110,11 +110,17 @@ async def list_bucket_objects(
     else:
         objects = await get_list_of_s3_objects(s3_resource, s3_bucket, prefix)
         objects_json = [
-            {"key": obj.key, "last_modified": obj.last_modified}
+            {
+                "key": obj.key,
+                "last_modified": obj.last_modified,
+                "size": obj.size / 1e3,
+            }
             for obj in objects
             if obj.key.endswith(file_format)
         ]
         return {
             "total": len(objects_json),
+            "file_size": "KB",
+            "bucket": s3_bucket,
             "objects": objects_json,
         }
