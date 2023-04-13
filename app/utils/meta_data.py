@@ -1,9 +1,11 @@
 import asyncio
 from typing import ChainMap, List
+from urllib.parse import urlparse
 
 from fastapi.logger import logger
 from starlette.datastructures import UploadFile
 
+from app.core.config import Settings
 from app.models.enums import SourceType
 from app.models.meta_data import MetaData
 from app.utils.columns_mapping import find_mapped_columns
@@ -19,10 +21,12 @@ from app.utils.output_file_name import (
     get_output_file_name,
     get_output_file_path,
 )
-from app.utils.s3_files import get_list_of_s3_objects
+from app.utils.s3_files import get_list_of_s3_objects, get_s3_resource
 from app.utils.spatial_coverage import get_spatial_coverage
 from app.utils.temporal_coverage import get_temporal_coverage
 from app.utils.units import get_units
+
+settings = Settings()
 
 
 async def get_dataset_meta_data(dataset_full_path: str, session=None):
@@ -153,6 +157,31 @@ async def create_meta_data_for_s3_bucket(
         for s3_file_obj in objects
         if s3_file_obj.key.endswith(file_format)
     ]
+
+    results = await asyncio.gather(*tasks)
+    return ChainMap(*results)
+
+
+async def create_meta_data_for_s3_file(s3_urls: List[str]):
+    tasks = []
+    s3_resource = await get_s3_resource(
+        s3_access_key=settings.S3_SOURCE_ACCESS_KEY,
+        s3_secret_key=settings.S3_SOURCE_SECRET_KEY,
+        s3_endpoint_url=settings.S3_SOURCE_ENDPOINT_URL,
+        resource="s3",
+    )
+    for s3_url in s3_urls:
+        url_parts = urlparse(s3_url)
+        s3_bucket, s3_key = url_parts.netloc, url_parts.path.lstrip("/")
+        tasks.append(
+            asyncio.ensure_future(
+                get_dataset_meta_data_for_s3_file(
+                    s3_resource=s3_resource,
+                    s3_bucket=s3_bucket,
+                    s3_key=s3_key,
+                )
+            )
+        )
 
     results = await asyncio.gather(*tasks)
     return ChainMap(*results)
