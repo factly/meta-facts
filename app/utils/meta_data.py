@@ -162,7 +162,7 @@ async def create_meta_data_for_s3_bucket(
     return ChainMap(*results)
 
 
-async def create_meta_data_for_s3_file(s3_urls: List[str]):
+async def create_meta_data_for_s3_files(s3_urls: List[str]):
     tasks = []
     s3_resource = await get_s3_resource(
         s3_access_key=settings.S3_SOURCE_ACCESS_KEY,

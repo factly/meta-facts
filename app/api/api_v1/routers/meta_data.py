@@ -11,7 +11,7 @@ from app.utils.meta_data import (
     create_meta_data_for_dataset_csv,
     create_meta_data_for_dataset_urls,
     create_meta_data_for_s3_bucket,
-    create_meta_data_for_s3_file,
+    create_meta_data_for_s3_files,
 )
 from app.utils.s3_files import get_list_of_s3_objects, get_s3_resource
 
@@ -93,7 +93,7 @@ async def get_meta_data_from_s3_urls(
     try:
         urls = source.urls
         logger.info(f"Getting meta data for S3 files: {len(urls)}")
-        meta_data = await create_meta_data_for_s3_file(
+        meta_data = await create_meta_data_for_s3_files(
             s3_urls=urls,
         )
     except Exception as e:
