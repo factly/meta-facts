@@ -11,3 +11,6 @@ class MetaData(BaseModel):
     spatial_coverage: Optional[str]
     formats_available: Optional[str]
     is_public: Optional[bool]
+
+    class Config:
+        order = True

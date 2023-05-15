@@ -1,4 +1,5 @@
 import boto3
+from fastapi import HTTPException, status
 
 from app.core.config import Settings
 
@@ -49,3 +50,14 @@ async def get_list_of_s3_objects(s3_resource, s3_bucket, prefix):
         raise ValueError(f"Error getting list of S3 objects: {e}")
     else:
         return s3_objects
+
+
+async def get_s3_object(s3_resource, s3_bucket, s3_key):
+    try:
+        s3_object = s3_resource.Object(s3_bucket, s3_key)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=f"{e}"
+        )
+    else:
+        return s3_object

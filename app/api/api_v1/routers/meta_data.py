@@ -6,10 +6,12 @@ from fastapi.logger import logger
 
 from app.core.config import Settings
 from app.models.meta_data import MetaData
+from app.models.s3_urls import S3Urls
 from app.utils.meta_data import (
     create_meta_data_for_dataset_csv,
     create_meta_data_for_dataset_urls,
     create_meta_data_for_s3_bucket,
+    create_meta_data_for_s3_files,
 )
 from app.utils.s3_files import get_list_of_s3_objects, get_s3_resource
 
@@ -77,6 +79,29 @@ async def get_meta_data_from_s3(
             prefix=prefix,
             file_format=file_format,
         )
+        return meta_data
+
+
+@router.post(
+    "/s3/urls",
+    response_model=Dict[str, MetaData],
+    description="Get meta data for S3 files from their urls",
+)
+async def get_meta_data_from_s3_urls(
+    source: S3Urls,
+):
+    try:
+        urls = source.urls
+        logger.info(f"Getting meta data for S3 files: {len(urls)}")
+        meta_data = await create_meta_data_for_s3_files(
+            s3_urls=urls,
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Error getting meta data for S3 files: {e}",
+        )
+    else:
         return meta_data
 
 
