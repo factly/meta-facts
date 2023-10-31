@@ -13,13 +13,14 @@ Automatic generation of Meta-Data for a dataset
 4. [Methodology](#methodology)
    1. Where this Library fits in the overall architecture
    2. Approach to determine Meta-Data
-      1. File Path
-      2. [Units](#units)
-      3. [Temporal Coverage](#temporal-coverage)
-      4. [Granularity](#granularity)  
-      5. [Spatial Coverage](#spatial-coverage)
-      6. [File Formats Available](#file-formats-available)
-      7. Is Public Dataset
+      1. [Column Names](#column-names)
+      2. [File Path](#)
+      3. [Units](#units)
+      4. [Temporal Coverage](#temporal-coverage)
+      5. [Granularity](#granularity)  
+      6. [Spatial Coverage](#spatial-coverage)
+      7. [File Formats Available](#file-formats-available)
+      8. Is Public Dataset
 
 </details>
 
@@ -64,8 +65,6 @@ Application parts are:
     ├── models           - pydantic models for this application.
     ├── services         - logic that is not just crud related.
     └── main.py          - FastAPI application creation and configuration.
-    │
-    tests                  - pytest
 
 ----
 
@@ -73,6 +72,23 @@ Application parts are:
 <br>
 <h3>Approach to determine Meta-Data</h3>
 <br>
+
+<h4 id = "column-names"><b>Column Names</b></h4>
+
+- *How are columns categorised?*
+  - The library categorises columns into Following Categories:
+    |Column Entity|Columns|
+    |:--:|:--|
+    | **Date-Time** | non_calendar_year <br> calender_year <br> other_year <br> quarter <br> month <br> date|
+    | **Geography** | country <br> state <br> district|
+    | **Unit** |unit|
+    | **Note** |note|
+    | **Unmapped** |Any unmapped columns|
+
+
+<div align="right"><a = href= "#table-of-content">Table of Content</a></div>
+
+---
 <h4 id = "units"><b>Units :</b></h4>
 
 - *General Workflow*
