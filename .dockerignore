@@ -1,5 +1,6 @@
 # Volumes
 volumes/
+.venv/
 
 # taken from : https://github.com/themattrix/python-pypi-template/blob/master/.dockerignore
 # Git
