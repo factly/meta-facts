@@ -1,12 +1,13 @@
 import re
 from itertools import chain
 from typing import List
+
 import pandas as pd
+from fastapi.logger import logger
 
 from app.core.config import DateTimeSettings
 
 datetime_settings = DateTimeSettings()
-from fastapi.logger import logger
 
 
 def convert_to_calender_year(other_year):
@@ -84,7 +85,9 @@ def temporal_coverage_representation(is_sequence, year_mapping):
         return f"{year_values_from_mapping[0]}"
 
     if not is_sequence:
-        logger.warning(f"Year Mapping: {', '.join(str(year) for year in year_values_from_mapping)}")
+        logger.warning(
+            f"Year Mapping: {', '.join(str(year) for year in year_values_from_mapping)}"
+        )
         return ", ".join(str(year) for year in year_values_from_mapping)
 
     return f"{year_values_from_mapping[0]} to {year_values_from_mapping[-1]}"
@@ -106,7 +109,7 @@ def get_time_periods(years, is_fiscal=False):
     end_year = years[0]
 
     for year in years[1:]:
-        if int(year.split('-')[0]) == int(end_year.split('-')[0]) + 1:
+        if int(year.split("-")[0]) == int(end_year.split("-")[0]) + 1:
             end_year = year
         else:
             if start_year == end_year:
@@ -115,7 +118,7 @@ def get_time_periods(years, is_fiscal=False):
                 time_periods.append(f"{start_year} to {end_year}")
             start_year = year
             end_year = year
-    
+
     # Add the last time period
     if start_year == end_year:
         time_periods.append(start_year)
@@ -137,12 +140,16 @@ async def get_temporal_coverage(dataset, mapped_columns: dict):
     if len(date_columns) != 0:
         date_column = date_columns[0]
         # Extract unique years
-        unique_year_values = pd.to_datetime(dataset[date_column], format='%d-%m-%Y').dt.year.unique()
+        unique_year_values = pd.to_datetime(
+            dataset[date_column], format="%d-%m-%Y"
+        ).dt.year.unique()
         unique_year_values = [str(year) for year in unique_year_values]
     elif len(year_columns) != 0:
         year_column = year_columns[0]
         unique_year_values = [
-            f"{year_val}" for year_val in dataset[year_column].unique() if year_val
+            f"{year_val}"
+            for year_val in dataset[year_column].unique()
+            if year_val
         ]
     else:
         return {"temporal_coverage": ""}

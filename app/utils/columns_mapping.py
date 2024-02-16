@@ -1,13 +1,15 @@
 import re
 from itertools import chain
 
+from fastapi.logger import logger
+
 from app.core.config import (
     DateTimeSettings,
     GeographySettings,
     NoteSettings,
     UnitSettings,
 )
-from fastapi.logger import logger
+
 datetime_settings = DateTimeSettings()
 geography_settings = GeographySettings()
 unit_settings = UnitSettings()
