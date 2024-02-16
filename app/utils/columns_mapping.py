@@ -1,6 +1,8 @@
 import re
 from itertools import chain
 
+from fastapi.logger import logger
+
 from app.core.config import (
     DateTimeSettings,
     GeographySettings,
@@ -62,7 +64,7 @@ async def find_datetime_columns(columns: set):
         columns, month_pattern
     )
     date_columns, columns = extract_pattern_from_columns(columns, date_pattern)
-
+    logger.info(f"date_columns: {date_columns}")
     # filter out `as_on_date` from date columns
     date_columns = {
         col for col in date_columns if not as_on_date_pattern.match(col)

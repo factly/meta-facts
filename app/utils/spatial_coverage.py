@@ -74,9 +74,11 @@ async def get_spatial_coverage(dataset):
     ]
     part, whole = (
         None,
-        None
-        if "country" in ordered_geographic_entity
-        else geography_settings.DEFAULT_SPATIAL_COVERAGE,
+        (
+            None
+            if "country" in ordered_geographic_entity
+            else geography_settings.DEFAULT_SPATIAL_COVERAGE
+        ),
     )
 
     for entity in ordered_geographic_entity:
