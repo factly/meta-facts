@@ -84,6 +84,23 @@ class GeographySettings(BaseSettings):
     }
 
 
+class OtherSettings(BaseSettings):
+
+    AIRLINE_KEYWORD = ".*airline[s]*[_names]{0,}"
+    AIRPORT_KEYWORD = ".*airport[s]*[_names]{0,}"
+    LANGUAGE_KEYWORD = ".*language.*"
+    CROPS_KEYWORD = ".*crop[s]*[_names]{0,}"
+    GENDER_KEYWORD = ".*gender.*"
+
+    GRANULARITY_REPRESENTATION = {
+        "airline": "Airline",
+        "airport": "Airport",
+        "language": "Language",
+        "crop": "Crop",
+        "gender": "Gender"
+    }
+
+
 class UnitSettings(BaseSettings):
 
     UNIT_KEYWORD = "unit"
