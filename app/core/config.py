@@ -97,7 +97,7 @@ class OtherSettings(BaseSettings):
         "airport": "Airport",
         "language": "Language",
         "crop": "Crop",
-        "gender": "Gender"
+        "gender": "Gender",
     }
 
 

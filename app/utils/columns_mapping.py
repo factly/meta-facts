@@ -5,8 +5,8 @@ from app.core.config import (
     DateTimeSettings,
     GeographySettings,
     NoteSettings,
-    UnitSettings,
     OtherSettings,
+    UnitSettings,
 )
 
 datetime_settings = DateTimeSettings()
@@ -34,9 +34,7 @@ async def find_other_granular_columns(columns: set):
     language_pattern = re.compile(
         r".*({})".format(other_settings.LANGUAGE_KEYWORD)
     )
-    crop_pattern = re.compile(
-        r".*({})".format(other_settings.CROPS_KEYWORD)
-    )
+    crop_pattern = re.compile(r".*({})".format(other_settings.CROPS_KEYWORD))
     gender_pattern = re.compile(
         r".*({})".format(other_settings.AIRPORT_KEYWORD)
     )
