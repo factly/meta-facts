@@ -1,12 +1,11 @@
 import re
 from itertools import chain
 
-from fastapi.logger import logger
-
 from app.core.config import (
     DateTimeSettings,
     GeographySettings,
     NoteSettings,
+    OtherSettings,
     UnitSettings,
 )
 
@@ -14,6 +13,7 @@ datetime_settings = DateTimeSettings()
 geography_settings = GeographySettings()
 unit_settings = UnitSettings()
 note_settings = NoteSettings()
+other_settings = OtherSettings()
 
 
 def extract_pattern_from_columns(
@@ -22,6 +22,44 @@ def extract_pattern_from_columns(
 ):
     matched_columns = set(filter(pattern.match, columns))
     return matched_columns, columns.difference(matched_columns)
+
+
+async def find_other_granular_columns(columns: set):
+    airline_pattern = re.compile(
+        r".*({})".format(other_settings.AIRLINE_KEYWORD)
+    )
+    airport_pattern = re.compile(
+        r".*({})".format(other_settings.AIRPORT_KEYWORD)
+    )
+    language_pattern = re.compile(
+        r".*({})".format(other_settings.LANGUAGE_KEYWORD)
+    )
+    crop_pattern = re.compile(r".*({})".format(other_settings.CROPS_KEYWORD))
+    gender_pattern = re.compile(
+        r".*({})".format(other_settings.AIRPORT_KEYWORD)
+    )
+
+    airline_columns, columns = extract_pattern_from_columns(
+        columns, airline_pattern
+    )
+    airport_columns, columns = extract_pattern_from_columns(
+        columns, airport_pattern
+    )
+    language_columns, columns = extract_pattern_from_columns(
+        columns, language_pattern
+    )
+    crop_columns, columns = extract_pattern_from_columns(columns, crop_pattern)
+    gender_columns, columns = extract_pattern_from_columns(
+        columns, gender_pattern
+    )
+
+    return {
+        "airline": airline_columns,
+        "airport": airport_columns,
+        "language": language_columns,
+        "crop": crop_columns,
+        "gender": gender_columns,
+    }
 
 
 async def find_datetime_columns(columns: set):
@@ -64,7 +102,7 @@ async def find_datetime_columns(columns: set):
         columns, month_pattern
     )
     date_columns, columns = extract_pattern_from_columns(columns, date_pattern)
-    logger.info(f"date_columns: {date_columns}")
+
     # filter out `as_on_date` from date columns
     date_columns = {
         col for col in date_columns if not as_on_date_pattern.match(col)
@@ -145,4 +183,5 @@ async def find_mapped_columns(columns):
             list(chain.from_iterable(mapped_columns.values()))
         )
     )
+
     return {**mapped_columns, "unmapped": not_mapped_columns}

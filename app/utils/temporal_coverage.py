@@ -165,5 +165,5 @@ async def get_temporal_coverage(dataset, mapped_columns: dict):
     # temporal_coverage = temporal_coverage_representation(
     #     year_in_sequence, year_mapping
     # )
-    logger.warning(f"Temporal Coverage: {temporal_coverage}")
+
     return {"temporal_coverage": temporal_coverage}
