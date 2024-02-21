@@ -64,12 +64,12 @@ async def find_other_granular_columns(columns: set):
 
 async def find_datetime_columns(columns: set):
     fiscal_year_pattern = re.compile(
-        r".*({}|{})".format(
+        r".*({})".format(
             datetime_settings.FISCAL_YEAR_KEYWORD,
         )
     )
     academic_year_pattern = re.compile(
-        r".*({}|{})".format(
+        r".*({})".format(
             datetime_settings.ACADEMIC_YEAR_KEYWORD,
         )
     )
