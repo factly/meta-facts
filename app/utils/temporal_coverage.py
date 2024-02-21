@@ -147,7 +147,7 @@ async def get_temporal_coverage(dataset, mapped_columns: dict):
     elif len(year_columns) != 0:
         year_column = year_columns[0]
         unique_year_values = [
-            f"{year_val}"
+            str(year_val)
             for year_val in dataset[year_column].unique()
             if year_val
         ]
@@ -158,12 +158,5 @@ async def get_temporal_coverage(dataset, mapped_columns: dict):
         return {"temporal_coverage": ""}
     is_fiscal = is_fiscal_check(unique_year_values)
     temporal_coverage = get_time_periods(unique_year_values, is_fiscal)
-    # year_mapping = get_list_mappings(unique_year_values)
-
-    # year_in_sequence = is_sequence(year_mapping)
-
-    # temporal_coverage = temporal_coverage_representation(
-    #     year_in_sequence, year_mapping
-    # )
 
     return {"temporal_coverage": temporal_coverage}

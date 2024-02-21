@@ -63,9 +63,13 @@ async def find_other_granular_columns(columns: set):
 
 
 async def find_datetime_columns(columns: set):
-    non_cal_year_pattern = re.compile(
+    fiscal_year_pattern = re.compile(
         r".*({}|{})".format(
             datetime_settings.FISCAL_YEAR_KEYWORD,
+        )
+    )
+    academic_year_pattern = re.compile(
+        r".*({}|{})".format(
             datetime_settings.ACADEMIC_YEAR_KEYWORD,
         )
     )
@@ -87,7 +91,10 @@ async def find_datetime_columns(columns: set):
     )
 
     fiscal_year_columns, columns = extract_pattern_from_columns(
-        columns, non_cal_year_pattern
+        columns, fiscal_year_pattern
+    )
+    academic_year_columns, columns = extract_pattern_from_columns(
+        columns, academic_year_pattern
     )
     year_columns, columns = extract_pattern_from_columns(
         columns, cal_year_pattern
@@ -108,7 +115,8 @@ async def find_datetime_columns(columns: set):
         col for col in date_columns if not as_on_date_pattern.match(col)
     }
     return {
-        "non_calendar_year": fiscal_year_columns,
+        "fiscal_year": fiscal_year_columns,
+        "academic_year": academic_year_columns,
         "calender_year": year_columns,
         "other_year": other_year_columns,
         "quarter": quarter_columns,

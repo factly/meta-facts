@@ -47,16 +47,17 @@ class DateTimeSettings(BaseSettings):
         2: ["week"],
         3: ["month"],
         4: ["quarter"],
-        5: ["calender_year", "non_calendar_year", "other_year"],
+        5: ["calender_year", "fiscal_year", "academic_year", "other_year"],
     }
     GRANULARITY_REPRESENTATION = {
-        "date": "Daily",
-        "week": "Weekly",
-        "month": "Monthly",
-        "quarter": "Quarterly",
-        "calender_year": "Yearly",
-        "non_calendar_year": "Yearly",
-        "other_year": "Yearly",
+        "date": "Day",
+        "week": "Week",
+        "month": "Month",
+        "quarter": "Quarter",
+        "calender_year": "Year",
+        "fiscal_year": "Fiscal Year",
+        "academic_year": "Academic Year",
+        "other_year": "Year",
     }
 
 
