@@ -131,7 +131,8 @@ def get_time_periods(years, is_fiscal=False):
 async def get_temporal_coverage(dataset, mapped_columns: dict):
     year_columns = (
         list(mapped_columns["calender_year"])
-        + list(mapped_columns["non_calendar_year"])
+        + list(mapped_columns["fiscal_year"])
+        + list(mapped_columns["academic_year"])
         + list(mapped_columns["other_year"])
     )
     year_columns = [year_column for year_column in year_columns if year_column]
