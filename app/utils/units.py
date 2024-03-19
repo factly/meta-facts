@@ -18,7 +18,7 @@ async def get_units(dataset, mapped_columns):
         if isinstance(unit, str)
     ]
     unique_units_from_unit_columns = list(
-        chain.from_iterable(unit_column_unique_values)
+        set(chain.from_iterable(unit_column_unique_values))
     )
 
     return {"units": ", ".join(unique_units_from_unit_columns)}
