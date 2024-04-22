@@ -2,6 +2,7 @@ FROM python:3.9-slim-buster
 
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y curl
 # Install Poetry
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python && \
     cd /usr/local/bin && \
