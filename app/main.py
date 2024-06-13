@@ -19,7 +19,7 @@ app.add_middleware(
 )
 
 
-@app.get("/")
+@app.get(settings.API_V1_STR)
 async def root():
     return {"message": "Server is up"}
 
