@@ -104,6 +104,9 @@ def get_time_periods(years, is_fiscal=False):
     if not is_fiscal:
         years = sorted(map(int, years))
         years = list(map(str, years))
+    else:
+        # sort the fiscal years
+        years = sorted(years, key=lambda x: int(x.split("-")[0]))
     time_periods = []
     start_year = years[0]
     end_year = years[0]
