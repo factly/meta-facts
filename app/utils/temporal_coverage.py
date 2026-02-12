@@ -102,8 +102,12 @@ def is_fiscal_check(unique_years):
 
 def get_time_periods(years, is_fiscal=False):
     if not is_fiscal:
-        years = sorted(map(int, years))
-        years = list(map(str, years))
+        try:
+            years = sorted(map(int, years))
+            years = list(map(str, years))
+        except ValueError:
+            logger.error("ValueError: " + str(years))
+            years = sorted(years, key=lambda x: int(x.split("-")[0]))
     else:
         # sort the fiscal years
         years = sorted(years, key=lambda x: int(x.split("-")[0]))

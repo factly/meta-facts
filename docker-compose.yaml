@@ -6,7 +6,7 @@ services:
   ##########################################################################
   metafacts-server:
     ports:
-      - 8005:8005
+      - 8905:8005
     build:
       context: .
       dockerfile: Dockerfile.dev

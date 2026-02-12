@@ -5,11 +5,11 @@ description = "Automatic generation of Meta-Data for a dataset"
 authors = ["Your address email (you@example.com)"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 requests = "^2.22.0"
 joblib = "^0.15.1"
 python-dotenv = "^0.19.2"
-pandas = "^1.3.5"
+pandas = "^2.0.0"
 asyncio = "^3.4.3"
 python-multipart = "^0.0.5"
 boto3 = "^1.24.7"
